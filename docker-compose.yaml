@@ -1,0 +1,33 @@
+version: "2.1"
+
+volumes:
+  ha_config:
+  mqtt:
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    volumes:
+      - ha_config:/config
+    labels:
+      io.balena.features.dbus: "1"
+    ports:
+      - 8123:8123
+    environment:
+      TZ: Europe/London
+      DBUS_SYSTEM_BUS_ADDRESS: unix:path=/host/run/dbus/system_bus_socket
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+
+  mqtt:
+    build: mqtt
+    ports:
+      - 1883:1883
+    volumes:
+      - mqtt:/mosquitto/data
+    tmpfs:
+      - /mosquitto/log
