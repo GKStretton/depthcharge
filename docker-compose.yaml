@@ -3,6 +3,7 @@ version: "2.1"
 volumes:
   ha_config:
   mqtt:
+  octoprint:
 
 services:
   homeassistant:
@@ -22,7 +23,6 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
-
   mqtt:
     build: mqtt
     ports:
@@ -31,3 +31,11 @@ services:
       - mqtt:/mosquitto/data
     tmpfs:
       - /mosquitto/log
+  octoprint:
+    image: octoprint/octoprint
+    restart: unless-stopped
+    ports:
+      - 3006:80
+    privileged: true
+    volumes:
+      - octoprint:/octoprint
